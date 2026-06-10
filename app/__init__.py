@@ -70,6 +70,42 @@ def add_creature():
 
         flash(f"Creature '{name}' added", "success")
         return redirect("/creatures")
+    
+@app.get("/creatures/<int:id>/kill")
+def kill_creature(id):
+
+    if id == 1:
+        flash(f"Creature was too powerful, euthanasia failed.", "error")
+        return redirect("/creatures")
+
+    with connect_db() as db:
+        sql = """
+            SELECT name, species, image
+            FROM creatures
+            WHERE id=?
+        """
+        params = (id,)
+        creature = db.execute(sql, params).fetchone()
+
+        if creature:
+
+            sql = "DELETE FROM Creatures WHERE id=?"
+            params = (id,)
+            db.execute(sql, params)
+
+            filepath = os.path.join(UPLOAD_FOLDER, creature['image'])
+            if os.path.exists(filepath):
+                os.remove(filepath)
+
+            flash(f"Creature '{creature['name']}' successfully euthenised.", "success")
+            return redirect("/creatures")
+        
+        else:
+            flash(f"Creature not found", "error")
+            return redirect("/creatures")
+
+            
+
 
 #-----------------------------------------------------------
 # Creature list page - Show all the creatures

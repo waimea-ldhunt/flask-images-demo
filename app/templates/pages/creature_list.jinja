@@ -17,6 +17,7 @@
                 <h3>{{ creature.name }}</h3>
                 <p>Species: <strong>{{ creature.species }}</strong></p>
                 <img src="/static/uploads/{{ creature.image }}" alt="Image of {{ creature.name }} the {{ creature.species }}">
+                <a href="/creatures/{{creature.id}}/kill">Kill</a>
             </div>
 
         {% else %}
