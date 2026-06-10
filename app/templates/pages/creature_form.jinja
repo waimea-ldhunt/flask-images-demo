@@ -1,0 +1,38 @@
+{#=====================================================
+  Creature List page
+=====================================================#}
+
+{% extends 'pages/_base.jinja' %}
+
+
+{% block content %}
+
+    <h2>Add a Creature</h2>
+
+    <form method="post" action="/creatures/add" enctype="multipart/form-data">
+        <label>
+            Name
+            <input name="name" type="text" required>
+        </label>
+
+        <label>
+            Species
+            <input name="species" type="text" required>
+        </label>
+
+        <label>
+            Image
+            <input
+                name="image"
+                type="file"
+                accept="image/png, image/jpeg, image/gif"
+                required
+            >
+        </label>
+
+        <button>Add Creature</button>
+    </form>
+    
+
+{% endblock %}
+

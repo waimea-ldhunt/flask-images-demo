@@ -10,6 +10,11 @@ from os import getenv
 from io import BytesIO
 import html
 from app.helpers import *
+import os
+import uuid
+from werkzeug.utils import secure_filename
+
+UPLOAD_FOLDER = os.path.join('app', 'static', 'uploads')
 
 
 # Create the app
@@ -28,6 +33,44 @@ def show_welcome():
     return render_template("pages/welcome.jinja")
 
 
+@app.get("/creatures/new")
+def show_form():
+    return render_template("pages/creature_form.jinja")
+
+@app.post("/creatures/add")
+def add_creature():
+    name = request.form.get('name', '').strip()
+    name = html.escape(name)
+
+    species = request.form.get('species', '').strip()
+    species = html.escape(species)
+
+    # Get the file selected via the form
+    image = request.files.get('image', None)
+    if not image or image.filename == '':
+        flash("There was a problem uploading the image", "error")
+        return redirect("/")
+
+    # Sanitise filename and make it unique
+    filename = secure_filename(image.filename)
+    random_prefix = uuid.uuid4().hex[:12]
+    unique_filename = f"{random_prefix}_{filename}"
+
+    # Get the path of the upload folder
+    filepath = os.path.join(UPLOAD_FOLDER, unique_filename)
+
+    # Save file to disk
+    image.save(filepath)
+
+    # Add the form data and the upload filename to the DB
+    with connect_db() as db:
+        sql = "INSERT INTO creatures (name, species, image) VALUES (?, ?, ?)"
+        params = (name, species, unique_filename)
+        db.execute(sql, params)
+
+        flash(f"Creature '{name}' added", "success")
+        return redirect("/creatures")
+
 #-----------------------------------------------------------
 # Creature list page - Show all the creatures
 #-----------------------------------------------------------
@@ -35,7 +78,7 @@ def show_welcome():
 def show_all_creatures():
     with connect_db() as db:
         sql = """
-            SELECT id, species, name
+            SELECT id, species, name, image
             FROM creatures
         """
         params = ()

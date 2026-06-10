@@ -23,21 +23,20 @@ class CreatureTable:
         CREATE TABLE creatures (
             id      INTEGER PRIMARY KEY AUTOINCREMENT,
             species TEXT NOT NULL,
-            name    TEXT NOT NULL
+            name    TEXT NOT NULL,
+            image   TEXT NOT NULL
         )
     """
 
     SEED_DATA = """
-        INSERT INTO creatures (species, name)
-        VALUES
-            ("Dragon",  "Pippa"),
-            ("Unicorn", "Barry"),
-            ("Vampire", "Helen")
+        INSERT INTO creatures (species, name, image)
+        VALUES ("Raw Chicken",  "Bingus", "bingus.png")
     """
 
 # Add more table classes here...
 
-
+# ("Unicorn", "Barry", "barry.png"),
+# ("Vampire", "Helen", "helen.png")
 
 #----------------------------------------------------------------------------
 # Table registry
